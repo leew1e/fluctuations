@@ -1,7 +1,14 @@
-import React from 'react';
+import React from "react";
 
-const ControlPanel = ({ simulationParams, isSimulating, onParamChange, onSimulation, onRestart }) => {
-  const { x0, v0, m, c, u, T, simulationBound, smoothMultiplier } = simulationParams;
+const ControlPanel = ({
+  simulationParams,
+  isSimulating,
+  onParamChange,
+  onSimulation,
+  onRestart,
+}) => {
+  const { x0, v0, m, c, u, T, simulationBound, smoothMultiplier, speedFactor } =
+    simulationParams;
 
   return (
     <div className="w-1/6">
@@ -12,12 +19,12 @@ const ControlPanel = ({ simulationParams, isSimulating, onParamChange, onSimulat
         <div className="space-y-4 flex flex-col h-[calc(100%-4rem)]">
           <div className="flex-grow space-y-4">
             {[
-              { label: 'X0 (m)', value: x0, key: 'x0' },
-              { label: 'V0 (m/s)', value: v0, key: 'v0' },
-              { label: 'm (kg)', value: m, key: 'm' },
-              { label: 'c (N/kg)', value: c, key: 'c' },
-              { label: 'u (rad)', value: u, key: 'u' },
-              { label: 'Period (s)', value: T, key: 'T' },
+              { label: "X0 (m)", value: x0, key: "x0" },
+              { label: "V0 (m/s)", value: v0, key: "v0" },
+              { label: "m (kg)", value: m, key: "m" },
+              { label: "c (N/kg)", value: c, key: "c" },
+              { label: "u (rad)", value: u, key: "u" },
+              { label: "Period (s)", value: T, key: "T" },
             ].map(({ label, value, key }) => (
               <div key={key}>
                 <label className="block text-sm font-medium text-gray-700">
@@ -26,7 +33,9 @@ const ControlPanel = ({ simulationParams, isSimulating, onParamChange, onSimulat
                 <input
                   type="number"
                   value={value}
-                  onChange={(e) => onParamChange(key, parseFloat(e.target.value))}
+                  onChange={(e) =>
+                    onParamChange(key, parseFloat(e.target.value))
+                  }
                   step="0.1"
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                 />
@@ -42,7 +51,9 @@ const ControlPanel = ({ simulationParams, isSimulating, onParamChange, onSimulat
               <input
                 type="number"
                 value={simulationBound}
-                onChange={(e) => onParamChange('simulationBound', parseFloat(e.target.value))}
+                onChange={(e) =>
+                  onParamChange("simulationBound", parseFloat(e.target.value))
+                }
                 step="0.1"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
               />
@@ -54,8 +65,28 @@ const ControlPanel = ({ simulationParams, isSimulating, onParamChange, onSimulat
               <input
                 type="number"
                 value={smoothMultiplier}
-                onChange={(e) => onParamChange('smoothMultiplier', parseInt(e.target.value))}
+                onChange={(e) =>
+                  onParamChange("smoothMultiplier", parseInt(e.target.value))
+                }
                 step="1"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Speed Factor (higher = slower)
+              </label>
+              <input
+                type="number"
+                value={speedFactor}
+                onChange={(e) =>
+                  onParamChange(
+                    "speedFactor",
+                    Math.max(1, parseInt(e.target.value))
+                  )
+                }
+                step="1"
+                min="1"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
               />
             </div>

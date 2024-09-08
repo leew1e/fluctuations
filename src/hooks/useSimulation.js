@@ -10,6 +10,7 @@ const useSimulation = () => {
     T: 10,
     simulationBound: 20,
     smoothMultiplier: 100,
+    speedFactor: 10,
   });
 
   const [data, setData] = useState([]);
