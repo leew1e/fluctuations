@@ -32,23 +32,24 @@ const FluctuatingProcesses = () => {
   const [isSimulating, setIsSimulating] = useState(false);
   const [time, setTime] = useState(0);
   const [data, setData] = useState([]);
-  const [smoothMultiplier, setSmoothMultiplier] = useState(30);
+  const [smoothMultiplier, setSmoothMultiplier] = useState(50);
 
   useEffect(() => {
     if (isSimulating) {
       const interval = setInterval(() => {
         setTime((prevTime) => {
           const newTime = prevTime + 1 / smoothMultiplier;
-          const k = 1 / T; // frequency (Hz)
-          const omega = 2 * Math.PI * k;
-          const x =
-            x0 * Math.cos(omega * newTime + u) +
-            (v0 / omega) * Math.sin(omega * newTime + u);
-          const v =
-            -x0 * omega * Math.sin(omega * newTime + u) +
-            v0 * Math.cos(omega * newTime + u);
+          const k = (2 * Math.PI) / T; // frequency (Hz)
+          const A = x0;
+          const B = v0 / k;
+          const xMax = Math.sqrt(A * A + B * B);
+          const xNew = xMax * Math.sin(k * newTime + u);
+          const vNew = -xMax * k * Math.cos(k * newTime + u);
 
-          setData((prevData) => [...prevData, { t: newTime, x, v }]);
+          setData((prevData) => [
+            ...prevData,
+            { t: newTime, x: xNew, v: vNew },
+          ]);
           return newTime;
         });
       }, 1000 / smoothMultiplier);
