@@ -183,6 +183,7 @@ const FluctuatingProcesses = () => {
                     type="number"
                     value={x0}
                     onChange={(e) => setX0(parseFloat(e.target.value))}
+                    step="0.1"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                   />
                 </div>
@@ -194,6 +195,7 @@ const FluctuatingProcesses = () => {
                     type="number"
                     value={v0}
                     onChange={(e) => setV0(parseFloat(e.target.value))}
+                    step="0.1"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                   />
                 </div>
@@ -205,6 +207,7 @@ const FluctuatingProcesses = () => {
                     type="number"
                     value={m}
                     onChange={(e) => setM(parseFloat(e.target.value))}
+                    step="0.1"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                   />
                 </div>
@@ -216,6 +219,7 @@ const FluctuatingProcesses = () => {
                     type="number"
                     value={c}
                     onChange={(e) => setC(parseFloat(e.target.value))}
+                    step="0.1"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                   />
                 </div>
@@ -227,6 +231,7 @@ const FluctuatingProcesses = () => {
                     type="number"
                     value={u}
                     onChange={(e) => setU(parseFloat(e.target.value))}
+                    step="0.1"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                   />
                 </div>
@@ -238,6 +243,7 @@ const FluctuatingProcesses = () => {
                     type="number"
                     value={T}
                     onChange={(e) => setT(parseFloat(e.target.value))}
+                    step="0.1"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                   />
                 </div>
@@ -253,6 +259,7 @@ const FluctuatingProcesses = () => {
                     onChange={(e) =>
                       setSmoothMultiplier(parseInt(e.target.value))
                     }
+                    step="0.1"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                   />
                 </div>
