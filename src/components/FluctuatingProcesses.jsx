@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -10,53 +10,48 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Calculate using next starting values setting from control panel:
-// x0 - initial position (m)
-// v0 - initial velocity (m/s)
-// m - mass (kg)
-// c - spring constant (N/m)
-// u - phase (rad)
-// T - period (s)
-
-// Need to calculate:
-// k - frequency (Hz)
-// x - current position (from t) (m)
-
 const FluctuatingProcesses = () => {
-  const [x0, setX0] = useState(1); // initial position (m)
-  const [v0, setV0] = useState(0); // initial velocity (m/s)
-  const [m, setM] = useState(1); // mass (kg)
-  const [c, setC] = useState(1); // spring constant (N/m)
-  const [u, setU] = useState(0); // phase (rad)
-  const [T, setT] = useState(1); // period (s)
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [time, setTime] = useState(0);
+  const [x0, setX0] = useState(1);
+  const [v0, setV0] = useState(0);
+  const [m, setM] = useState(1);
+  const [c, setC] = useState(1);
+  const [u, setU] = useState(0);
+  const [T, setT] = useState(1);
   const [data, setData] = useState([]);
-  const [smoothMultiplier, setSmoothMultiplier] = useState(50);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [smoothMultiplier, setSmoothMultiplier] = useState(100);
+  const [simulationBound, setSimulationBound] = useState(20);
+
+  const k = useMemo(() => (2 * Math.PI) / T, [T]);
+  const a = useMemo(() => x0, [x0]);
+  const b = useMemo(() => v0 / k, [v0, k]);
+  const xMax = useMemo(() => Math.sqrt(a * a + b * b), [a, b]);
+
+  useEffect(() => {
+    const newData = [];
+    for (
+      let t = 0;
+      t <= simulationBound;
+      t += simulationBound / smoothMultiplier
+    ) {
+      const x = a * Math.cos(k * t + u) + b * Math.sin(k * t + u);
+      const v = k * (-a * Math.sin(k * t + u) + b * Math.cos(k * t + u));
+      newData.push({ t, x, v });
+    }
+    setData(newData);
+    setCurrentIndex(0);
+  }, [x0, v0, m, c, u, T, simulationBound, smoothMultiplier, k, a, b]);
 
   useEffect(() => {
     if (isSimulating) {
       const interval = setInterval(() => {
-        setTime((prevTime) => {
-          const newTime = prevTime + 1 / smoothMultiplier;
-          const k = (2 * Math.PI) / T; // frequency (Hz)
-          const A = x0;
-          const B = v0 / k;
-          const xMax = Math.sqrt(A * A + B * B);
-          const xNew = xMax * Math.sin(k * newTime + u);
-          const vNew = -xMax * k * Math.cos(k * newTime + u);
-
-          setData((prevData) => [
-            ...prevData,
-            { t: newTime, x: xNew, v: vNew },
-          ]);
-          return newTime;
-        });
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % data.length);
       }, 1000 / smoothMultiplier);
 
       return () => clearInterval(interval);
     }
-  }, [isSimulating, x0, v0, m, c, u, T, smoothMultiplier]);
+  }, [isSimulating, data, smoothMultiplier]);
 
   const handleSimulation = () => {
     setIsSimulating(!isSimulating);
@@ -64,15 +59,13 @@ const FluctuatingProcesses = () => {
 
   const handleRestartSimulation = () => {
     setIsSimulating(false);
-    setTime(0);
-    setData([]);
+    setCurrentIndex(0);
   };
 
   const renderOscillationSimulation = () => {
-    const position = data.length > 0 ? data[data.length - 1].x : 0;
-    const maxAmplitude = x0 * 2;
-    const circleSize = 16; // 4rem = 16px
-    const circlePosition = ((position + x0) / maxAmplitude) * 100;
+    const position = data[currentIndex]?.x || 0;
+    const circleSize = 16;
+    const circlePosition = ((position + x0) / xMax / 2) * 100;
     const clampedPosition = Math.max(0, Math.min(100, circlePosition));
 
     return (
@@ -85,10 +78,10 @@ const FluctuatingProcesses = () => {
           }}
         ></div>
         <div className="absolute left-0 top-1/2 transform -translate-y-1/2 text-xs text-gray-600 ml-2">
-          {-x0.toFixed(2)}
+          {-xMax.toFixed(3)}
         </div>
         <div className="absolute right-0 top-1/2 transform -translate-y-1/2 text-xs text-gray-600 mr-2">
-          {x0.toFixed(2)}
+          {xMax.toFixed(3)}
         </div>
       </div>
     );
@@ -99,10 +92,10 @@ const FluctuatingProcesses = () => {
       if (active && payload && payload.length) {
         return (
           <div className="bg-white p-2 border border-gray-300 rounded shadow">
-            <p className="text-sm">{`Time: ${label.toFixed(2)}`}</p>
+            <p className="text-sm">{`Time: ${label.toFixed(3)}`}</p>
             <p className="text-sm">{`${
               title.split(" ")[0]
-            }: ${payload[0].value.toFixed(2)}`}</p>
+            }: ${payload[0].value.toFixed(3)}`}</p>
           </div>
         );
       }
@@ -122,7 +115,7 @@ const FluctuatingProcesses = () => {
                 position: "insideBottomRight",
                 offset: -10,
               }}
-              tickFormatter={(value) => value.toFixed(2)}
+              tickFormatter={(value) => value.toFixed(3)}
             />
             <YAxis
               label={{
@@ -130,7 +123,7 @@ const FluctuatingProcesses = () => {
                 angle: -90,
                 position: "insideLeft",
               }}
-              tickFormatter={(value) => value.toFixed(2)}
+              tickFormatter={(value) => value.toFixed(3)}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
@@ -150,15 +143,11 @@ const FluctuatingProcesses = () => {
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8 w-full">
       <h1 className="text-3xl font-bold mb-6 text-blue-500">Fluctuations</h1>
       <div className="flex flex-row gap-6">
-        {/* Left side: Graphs and Simulation */}
         <div className="w-5/6 space-y-6">
-          {/* Graphs */}
           <div className="flex flex-col gap-6">
-            {renderGraph("Velocity vs Time", "v", "#8884d8")}
-            {renderGraph("Position vs Time", "x", "#00ff00")}
+            {renderGraph("X (t)", "x", "#8884d8")}
+            {renderGraph("V (t)", "v", "#00ff00")}
           </div>
-
-          {/* Fluctuation Simulation */}
           <div className="bg-white p-4 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold mb-2 text-blue-500">
               Fluctuation Simulation
@@ -166,8 +155,6 @@ const FluctuatingProcesses = () => {
             {renderOscillationSimulation()}
           </div>
         </div>
-
-        {/* Right side: Control Panel */}
         <div className="w-1/6">
           <div className="bg-white p-4 rounded-lg shadow-md h-full">
             <h2 className="text-lg font-semibold mb-4 text-blue-500">
@@ -177,7 +164,7 @@ const FluctuatingProcesses = () => {
               <div className="flex-grow space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    x0 (m)
+                    X0 (m)
                   </label>
                   <input
                     type="number"
@@ -189,7 +176,7 @@ const FluctuatingProcesses = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    v0 (m/s)
+                    V0 (m/s)
                   </label>
                   <input
                     type="number"
@@ -201,7 +188,7 @@ const FluctuatingProcesses = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Mass (kg)
+                    m (kg)
                   </label>
                   <input
                     type="number"
@@ -213,7 +200,7 @@ const FluctuatingProcesses = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    c (N/m)
+                    c (N/kg)
                   </label>
                   <input
                     type="number"
@@ -237,7 +224,7 @@ const FluctuatingProcesses = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    T (s)
+                    Period (s)
                   </label>
                   <input
                     type="number"
@@ -251,7 +238,21 @@ const FluctuatingProcesses = () => {
               <div className="space-y-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Smooth Multiplier
+                    Simulation Bound (s)
+                  </label>
+                  <input
+                    type="number"
+                    value={simulationBound}
+                    onChange={(e) =>
+                      setSimulationBound(parseFloat(e.target.value))
+                    }
+                    step="0.1"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Steps
                   </label>
                   <input
                     type="number"
@@ -259,7 +260,7 @@ const FluctuatingProcesses = () => {
                     onChange={(e) =>
                       setSmoothMultiplier(parseInt(e.target.value))
                     }
-                    step="0.1"
+                    step="1"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                   />
                 </div>
