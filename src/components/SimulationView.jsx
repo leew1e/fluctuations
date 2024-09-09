@@ -3,10 +3,11 @@ import React from "react";
 const CIRCLE_SIZE = 8;
 
 const SimulationView = ({ data, currentIndex, simulationParams }) => {
-  const { x0, xMax } = simulationParams;
+  const { xMax } = simulationParams;
   const position = data[currentIndex]?.x || 0;
   const velocity = data[currentIndex]?.v || 0;
-  const circlePosition = ((position + x0) / xMax / 2) * 100;
+  // Update the position calculation
+  const circlePosition = ((position + xMax) / (2 * xMax)) * 100;
   const clampedPosition = Math.max(0, Math.min(100, circlePosition));
 
   return (

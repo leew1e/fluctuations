@@ -7,7 +7,7 @@ const ControlPanel = ({
   onSimulation,
   onRestart,
 }) => {
-  const { x0, v0, m, c, u, T, simulationBound, smoothMultiplier, speedFactor } =
+  const { x0, v0, m, c, u, simulationBound, smoothMultiplier, speedFactor } =
     simulationParams;
 
   return (
@@ -24,7 +24,6 @@ const ControlPanel = ({
               { label: "m (kg)", value: m, key: "m" },
               { label: "c (N/kg)", value: c, key: "c" },
               { label: "u (rad)", value: u, key: "u" },
-              { label: "Period (s)", value: T, key: "T" },
             ].map(({ label, value, key }) => (
               <div key={key}>
                 <label className="block text-sm font-medium text-gray-700">
