@@ -79,14 +79,8 @@ const ControlPanel = ({
               <input
                 type="number"
                 value={speedFactor}
-                onChange={(e) =>
-                  onParamChange(
-                    "speedFactor",
-                    Math.max(1, parseInt(e.target.value))
-                  )
-                }
-                step="1"
-                min="1"
+                onChange={(e) => onParamChange("speedFactor", e.target.value)}
+                step="0.1"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
               />
             </div>

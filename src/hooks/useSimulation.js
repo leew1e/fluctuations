@@ -10,14 +10,14 @@ const useSimulation = () => {
     T: 10,
     simulationBound: 20,
     smoothMultiplier: 100,
-    speedFactor: 10,
+    speedFactor: 1,
   });
 
   const [data, setData] = useState([]);
   const [isSimulating, setIsSimulating] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { x0, v0, T, u, simulationBound, smoothMultiplier } = simulationParams;
+  const { x0, v0, T, u, simulationBound, smoothMultiplier, speedFactor } = simulationParams;
 
   const k = useMemo(() => (2 * Math.PI) / T, [T]);
   const a = useMemo(() => x0, [x0]);
@@ -43,11 +43,11 @@ const useSimulation = () => {
     if (isSimulating) {
       const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % data.length);
-      }, 1000 / smoothMultiplier);
+      }, 1000 / smoothMultiplier * speedFactor);
 
       return () => clearInterval(interval);
     }
-  }, [isSimulating, data, smoothMultiplier]);
+  }, [isSimulating, data, smoothMultiplier, speedFactor]);
 
   const handleSimulation = () => {
     setIsSimulating(!isSimulating);
