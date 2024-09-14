@@ -13,11 +13,11 @@ const FluctuatingProcesses = () => {
     handleSimulation,
     handleRestartSimulation,
     handleParamChange,
+    handlePresetChange,
   } = useSimulation();
 
   return (
     <div className="min-h-screen bg-gray-100 p-2 sm:p-4 md:p-6 w-full">
-      <h1 className="text-3xl font-bold mb-4 text-blue-500">Fluctuations</h1>
       <div className="flex flex-row gap-4">
         <div className="w-5/6 space-y-4">
           <div className="flex flex-col gap-4">
@@ -36,6 +36,7 @@ const FluctuatingProcesses = () => {
           onParamChange={handleParamChange}
           onSimulation={handleSimulation}
           onRestart={handleRestartSimulation}
+          onPresetChange={handlePresetChange}
         />
       </div>
     </div>

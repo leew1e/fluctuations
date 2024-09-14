@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { PRESETS } from '../constants/presets';
 
 const FLUCTUATIONS_TYPE = {
   UNDAMPED: 'undamped',
@@ -7,18 +8,20 @@ const FLUCTUATIONS_TYPE = {
   CRITICALLY_DAMPED: 'critically_damped'
 };
 
+const INITIAL_PARAMS = {
+  x0: 1,
+  v0: 0,
+  m: 1,
+  c: 1,
+  mu: 0,
+  u: 0,
+  simulationBound: 20,
+  smoothMultiplier: 100,
+  speedFactor: 1,
+};
+
 const useSimulation = () => {
-  const [simulationParams, setSimulationParams] = useState({
-    x0: 1,
-    v0: 0,
-    m: 1,
-    c: 1,
-    mu: 0,
-    u: 0,
-    simulationBound: 20,
-    smoothMultiplier: 100,
-    speedFactor: 1,
-  });
+  const [simulationParams, setSimulationParams] = useState(INITIAL_PARAMS);
 
   const [data, setData] = useState([]);
   const [isSimulating, setIsSimulating] = useState(false);
@@ -95,10 +98,20 @@ const useSimulation = () => {
   const handleRestartSimulation = () => {
     setIsSimulating(false);
     setCurrentIndex(0);
+    setSimulationParams(INITIAL_PARAMS);
   };
 
   const handleParamChange = (key, value) => {
     setSimulationParams((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handlePresetChange = (presetKey) => {
+    if (presetKey && PRESETS[presetKey]) {
+      setSimulationParams((prev) => ({
+        ...prev,
+        ...PRESETS[presetKey].params,
+      }));
+    }
   };
 
   return {
@@ -109,6 +122,7 @@ const useSimulation = () => {
     handleSimulation,
     handleRestartSimulation,
     handleParamChange,
+    handlePresetChange,
   };
 };
 

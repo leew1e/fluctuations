@@ -1,4 +1,4 @@
-import React from "react";
+import { PRESETS } from '../constants/presets';
 
 const ControlPanel = ({
   simulationParams,
@@ -6,6 +6,7 @@ const ControlPanel = ({
   onParamChange,
   onSimulation,
   onRestart,
+  onPresetChange,
 }) => {
   const { x0, v0, m, c, u, mu, simulationBound, smoothMultiplier, speedFactor } =
     simulationParams;
@@ -18,6 +19,27 @@ const ControlPanel = ({
         </h2>
         <div className="space-y-4 flex flex-col h-[calc(100%-4rem)]">
           <div className="flex-grow space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Preset
+              </label>
+              <select
+                value={Object.entries(PRESETS).find(([_, preset]) =>
+                  Object.entries(preset.params).every(([key, value]) =>
+                    simulationParams[key] === value
+                  )
+                )?.[0] || ""}
+                onChange={(e) => onPresetChange(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
+              >
+                <option value="">Custom</option>
+                {Object.entries(PRESETS).map(([key, preset]) => (
+                  <option key={key} value={key}>
+                    {preset.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             {[
               { label: "X0 (m)", value: x0, key: "x0" },
               { label: "V0 (m/s)", value: v0, key: "v0" },
