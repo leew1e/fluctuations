@@ -43,11 +43,11 @@ const ControlPanel = ({
             {[
               { label: "X0 (m)", value: x0, key: "x0" },
               { label: "V0 (m/s)", value: v0, key: "v0" },
-              { label: "m (kg)", value: m, key: "m" },
-              { label: "c (N/kg)", value: c, key: "c" },
-              { label: "μ (N*s/m^2)", value: mu, key: "mu" },
+              { label: "m (kg)", value: m, key: "m", min: 0.1 },
+              { label: "c (N/kg)", value: c, key: "c", min: 0 },
+              { label: "μ (N*s/m^2)", value: mu, key: "mu", min: 0 },
               { label: "u (rad)", value: u, key: "u" },
-            ].map(({ label, value, key }) => (
+            ].map(({ label, value, key, min }) => (
               <div key={key}>
                 <label className="block text-sm font-medium text-gray-700">
                   {label}
@@ -59,6 +59,7 @@ const ControlPanel = ({
                     onParamChange(key, parseFloat(e.target.value))
                   }
                   step="0.1"
+                  min={min}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 py-1 px-2 bg-gray-50"
                 />
               </div>
